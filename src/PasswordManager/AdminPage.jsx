@@ -13,6 +13,7 @@ import {
     Grid
 } from '@material-ui/core';
 import apiConsumer from '../Utils/apiConsumer';
+import Constants from './Constants';
 
 class AdminPage extends React.Component
 {
@@ -33,6 +34,27 @@ class AdminPage extends React.Component
         else
             window.toast.error(`Some error!!! ${response.error_message}`);
     };
+
+    addUser = async() => {
+        const {
+            username,
+            password
+        } = this.state;
+        const response = await apiConsumer('/admin/addUser',this.authenticator({
+            username,
+            hash: CryptoJS.HmacSHA256(password,Constants.dbUserAuthHashMaker).toString(CryptoJS.enc.Hex)
+        }));
+        if(response.status === 'ok')
+        {
+            const { userList } = this.state;
+            userList.push(response.result.username);
+            this.setState({userList});
+        }
+        else
+        {
+            window.toast.error(response.error_message);
+        }
+    }
 
     componentDidMount()
     {
@@ -76,7 +98,8 @@ class AdminPage extends React.Component
             props, 
             state, 
             stateSetter,
-            loadUsersList 
+            loadUsersList,
+            addUser 
         } = this; 
 
         const { logoutHandler } = props;
@@ -106,11 +129,11 @@ class AdminPage extends React.Component
                             <InputGroup value={username} onChange={(e) => stateSetter('username',e.target.value)} placeholder="Username" fill large leftIcon="person" />
                         </Grid>
                         <Grid item>
-                            <InputGroup value={password} onChange={(e) => stateSetter('password',e.target.value)} placeholder="Password" fill large leftIcon="key" />
+                            <InputGroup type="password" value={password} onChange={(e) => stateSetter('password',e.target.value)} placeholder="Password" fill large leftIcon="key" />
                         </Grid>
                         <Grid spacing={1} container item direction="row">
                             <Grid item>
-                                <Button intent="primary" icon="add">{"Add User"}</Button>
+                                <Button onClick={addUser} intent="primary" icon="add">{"Add User"}</Button>
                             </Grid>
                             <Grid item>
                                 <Button onClick={loadUsersList} intent="warning" icon='refresh'>{"Refresh Users"}</Button>
@@ -120,7 +143,7 @@ class AdminPage extends React.Component
                             {
                                 userList &&
                                 userList.map(user => (
-                                    <Grid item>
+                                    <Grid key={user} item>
                                         <Tag round large icon='person' >
                                             {user}
                                         </Tag>

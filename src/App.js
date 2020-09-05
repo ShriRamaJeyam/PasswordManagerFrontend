@@ -26,8 +26,8 @@ window.toast.success = (message) => {
 }
 
 function App() {
-  //return (<MainApp />);
-  return (<AdminPage authHash={'SriRama108!)*'} logoutHandler={()=>null} />);
+  return (<MainApp />);
+  //return (<AdminPage authHash={'SriRama108!)*'} logoutHandler={()=>null} />);
 }
 
 export default App;
