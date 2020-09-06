@@ -15,7 +15,7 @@ import {
 import apiConsumer from '../Utils/apiConsumer';
 import Constants from './Constants';
 
-class AdminPage extends React.Component
+class UserPage extends React.Component
 {
     constructor(props)
     {
@@ -242,4 +242,4 @@ class AdminPage extends React.Component
     }
 }
 
-export default AdminPage;
+export default UserPage;

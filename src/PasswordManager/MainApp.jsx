@@ -2,6 +2,8 @@ import React from 'react';
 import LoginScreen from './LoginScreen';
 import apiConsumer from '../Utils/apiConsumer';
 import AdminPage from './AdminPage';
+import Constants from './Constants';
+import UserPage from './UserPage';
 const CryptoJS = require('crypto-js')
 
 class MainApp extends React.Component 
@@ -47,8 +49,8 @@ class MainApp extends React.Component
             var result = await apiConsumer('/admin/auth',data);
             if(result.status === 'ok')
             {
-                this.stateSetter('loginID','admin');
                 this.stateSetter('authHash',password);
+                this.stateSetter('loginID','admin');
             }
             else
             {
@@ -60,7 +62,26 @@ class MainApp extends React.Component
         }
         else
         {
-
+            const data = { auth:{ } };
+            const { auth } = data;
+            auth.username = username;
+            auth.millis = now;
+            const authHash = CryptoJS.HmacSHA256(password,Constants.dbUserAuthHashMaker).toString(CryptoJS.enc.Hex);
+            auth.hash = CryptoJS.HmacSHA256(`${now}`,authHash).toString(CryptoJS.enc.Hex);
+            var result = await apiConsumer('/user/auth',data);
+            if(result.status === 'ok')
+            {
+                this.stateSetter('authHash',authHash);
+                this.stateSetter('username',username);
+                this.stateSetter('loginID',result.id);
+            }
+            else
+            {
+                if(typeof errorSetter === 'function')
+                {
+                    errorSetter(result.error_message);
+                }
+            }
         }
     };
 
@@ -76,7 +97,7 @@ class MainApp extends React.Component
     render()
     {
         const { logoutHandler } = this;
-        const { loginID,authHash } = this.state;
+        const { loginID,authHash,username } = this.state;
         if(!loginID)
         {
             return (<LoginScreen loginHandler={this.loginHandler} />);
@@ -84,6 +105,10 @@ class MainApp extends React.Component
         else if(loginID === 'admin')
         {
             return (<AdminPage authHash={authHash} logoutHandler={logoutHandler} />);
+        }
+        else if(typeof loginID === 'number')
+        {
+            return (<UserPage authHash={authHash} username={username} logoutHandler={logoutHandler}  />);
         }
         return null;
     }
