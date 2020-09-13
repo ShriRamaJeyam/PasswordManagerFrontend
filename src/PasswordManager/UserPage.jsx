@@ -1,6 +1,6 @@
 import React from 'react';
 import CryptoJS from 'crypto-js';
-
+import * as qwerty from './CryptoHelper/emojiKey';
 import {
     Navbar,
     Button,
@@ -9,17 +9,21 @@ import {
     InputGroup
 } from '@blueprintjs/core';
 
+import CKEditor from 'ckeditor4-react';
+
 import {
     Grid
 } from '@material-ui/core';
 import apiConsumer from '../Utils/apiConsumer';
 import Constants from './Constants';
+console.log("qwerty",qwerty)
 
 class UserPage extends React.Component
 {
     constructor(props)
     {
         super(props);
+        window.CryptoJS=CryptoJS;
         this.state = {
             username:'',
             password:'',
@@ -29,87 +33,16 @@ class UserPage extends React.Component
         };
     }
 
-    loadUsersList = async() => {
-        const response = await apiConsumer('/admin/listUser',this.authenticator({}));
-        if(response.status === 'ok')
-            this.stateSetter('userList',response.result);
-        else
-            window.toast.error(`Some error!!! ${response.error_message}`);
-    };
-
-    addUser = async() => {
-        const {
-            username,
-            password
-        } = this.state;
-        if(!username || !password)
-        {
-            window.toast.error("Please enter username and password.");
-            return null;
-        }
-        if(username.length < 8 || password.length < 8 )
-        {
-            window.toast.error("Both username and password must be atleast 8 characters.");
-            return null;
-        }
-        const response = await apiConsumer('/admin/addUser',this.authenticator({
-            username,
-            hash: CryptoJS.HmacSHA256(password,Constants.dbUserAuthHashMaker).toString(CryptoJS.enc.Hex)
-        }));
-        if(response.status === 'ok')
-        {
-            const { userList } = this.state;
-            userList.push(response.result.username);
-            this.setState({
-                userList,
-                username:'',
-                password:''
-            });
-        }
-        else
-        {
-            window.toast.error(response.error_message);
-        }
-    }
-
     loadTagsList = async() => {
-        const response = await apiConsumer('/admin/listTag',this.authenticator({}));
+        const response = await apiConsumer('/user/listTag',this.authenticator({}));
         if(response.status === 'ok')
             this.stateSetter('tagList',response.result);
         else
             window.toast.error(`Some error!!! ${response.error_message}`);
     };
 
-    addTag = async() => {
-        const {
-            tag
-        } = this.state;
-        if(!tag)
-        {
-            window.toast.error("Please enter Tagname.");
-            return null;
-        }
-        const response = await apiConsumer('/admin/addTag',this.authenticator({
-            tag
-        }));
-        if(response.status === 'ok')
-        {
-            const { tagList } = this.state;
-            tagList.push(response.result.tag);
-            this.setState({
-                tagList,
-                tag:''
-            });
-        }
-        else
-        {
-            window.toast.error(response.error_message);
-        }
-    }
-
     componentDidMount()
     {
-        this.loadUsersList();
         this.loadTagsList();
     }
 
@@ -135,11 +68,12 @@ class UserPage extends React.Component
     };
 
     authenticator = (data) => {
-        const { authHash } = this.props;
+        const { authHash, loginID } = this.props;
         const auth = {};
         const now = new Date().getTime();
         auth.millis = now;
-        auth.hash = CryptoJS.SHA256(`${authHash}${now}`).toString(CryptoJS.enc.Hex);
+        auth.hash = CryptoJS.HmacSHA256(`${now}`,authHash).toString(CryptoJS.enc.Hex);
+        auth.id = loginID;
         data.auth = auth;
         return data;
     }
@@ -158,85 +92,30 @@ class UserPage extends React.Component
 
         const { logoutHandler } = props;
         const { 
-            username, 
             password,
             tag,
             tagList,
             userList 
         } = state;
+        const { username } = props;
         return (
             <React.Fragment>
                 <Navbar>
                     <Navbar.Group align="left">
                         <Navbar.Heading>
-                            {"Password Manager Administrator"}
+                            {`Hi, ${username}`}
                         </Navbar.Heading>
                     </Navbar.Group>
                     <Navbar.Group align="right">
+                        <Button minimal intent="primary" icon="add">
+                            {"Add Page"}
+                        </Button>
                         <Button onClick={logoutHandler} minimal intent="danger" icon="log-out">
                             {"Logout"}
                         </Button>
                     </Navbar.Group>
                 </Navbar>
                 <br />
-                <Card elevation={5}>
-                    <Grid spacing={1} container direction="column">
-                        <Grid item>
-                            <InputGroup value={username} onChange={(e) => stateSetter('username',e.target.value)} placeholder="Username" fill large leftIcon="person" />
-                        </Grid>
-                        <Grid item>
-                            <InputGroup type="password" value={password} onChange={(e) => stateSetter('password',e.target.value)} placeholder="Password" fill large leftIcon="key" />
-                        </Grid>
-                        <Grid spacing={1} container item direction="row">
-                            <Grid item>
-                                <Button onClick={addUser} intent="primary" icon="add">{"Add User"}</Button>
-                            </Grid>
-                            <Grid item>
-                                <Button onClick={loadUsersList} intent="warning" icon='refresh'>{"Refresh Users"}</Button>
-                            </Grid>
-                        </Grid>
-                        <Grid spacing={1} container direction="row" item>
-                            {
-                                userList &&
-                                userList.map(user => (
-                                    <Grid key={user} item>
-                                        <Tag round large icon='person' >
-                                            {user}
-                                        </Tag>
-                                    </Grid>
-                                ))
-                            }
-                        </Grid>
-                    </Grid>
-                </Card>
-                <br />
-                <Card elevation={5}>
-                    <Grid spacing={1} container direction="column">
-                        <Grid item>
-                            <InputGroup value={tag} onChange={(e) => stateSetter('tag',e.target.value)} placeholder="Tag Name" fill large leftIcon='tag' />
-                        </Grid>
-                        <Grid spacing={1} container item direction="row">
-                            <Grid item>
-                                <Button onClick={addTag} intent="primary" icon="add">{"Add Tag"}</Button>
-                            </Grid>
-                            <Grid item>
-                                <Button onClick={loadTagsList} intent="warning" icon='refresh'>{"Refresh Tags"}</Button>
-                            </Grid>
-                        </Grid>
-                        <Grid spacing={1} container direction="row" item>
-                            {
-                                tagList &&
-                                tagList.map(tag => (
-                                    <Grid key={tag} item>
-                                        <Tag round icon='tag' >
-                                            {tag}
-                                        </Tag>
-                                    </Grid>
-                                ))
-                            }
-                        </Grid>
-                    </Grid>
-                </Card>
             </React.Fragment>
         );
     }
