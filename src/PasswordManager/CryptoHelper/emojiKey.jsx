@@ -43,14 +43,8 @@ const generateKey = () =>
     }
     return JSON.stringify(result);
 }
-/*console.log({
-    b64,
-    b64Decrypt,
-    emojiList,
-    emojiDecryptList,
-    numberKey,
-    numDecryptKey
-});*/
+
+const keySource = [ "Krishna", "Rama", "Matsya", "Kurma", "Varaha", "Narasimha" ];
 
 module.exports = {
     b64,
@@ -58,5 +52,6 @@ module.exports = {
     emojiList,
     emojiDecryptList,
     numberKey,
-    numDecryptKey
+    numDecryptKey,
+    keySource
 };

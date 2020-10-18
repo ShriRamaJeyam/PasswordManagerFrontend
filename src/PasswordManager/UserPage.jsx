@@ -9,14 +9,15 @@ import {
     InputGroup
 } from '@blueprintjs/core';
 
+import { Grid } from '@material-ui/core';
+
 import CKEditor from 'ckeditor4-react';
 
-import {
-    Grid
-} from '@material-ui/core';
 import apiConsumer from '../Utils/apiConsumer';
 import Constants from './Constants';
-console.log("qwerty",qwerty)
+import AddPassword from './AddPassword';
+import keySource from './keySource';
+import decrypt from './CryptoHelper/decrypt';
 
 class UserPage extends React.Component
 {
@@ -25,25 +26,50 @@ class UserPage extends React.Component
         super(props);
         window.CryptoJS=CryptoJS;
         this.state = {
-            username:'',
-            password:'',
-            tag:'',
-            tagList : null,
-            userList : null
+            tagList : [],
+            tagMap : {},
+            selected: null,
+            passwords: {}
         };
     }
 
     loadTagsList = async() => {
         const response = await apiConsumer('/user/listTag',this.authenticator({}));
         if(response.status === 'ok')
-            this.stateSetter('tagList',response.result);
+        {
+            const tagMap = {};
+            const tagList = [];
+            response.result.forEach(t => {tagMap[t.id] = t.tag; tagList.push(t.tag)});
+            this.setState({tagList,tagMap});
+        }
         else
             window.toast.error(`Some error!!! ${response.error_message}`);
     };
 
+    loadPasswordsList = async() => {
+        const response = await apiConsumer('/user/listPassword',this.authenticator({}));
+        if(response.status === 'ok')
+        {
+            const passwords = {};
+            response.result.forEach(p => {
+                passwords[p.id] = p;
+                p.password = decrypt(p.password,this.state.key)
+            });
+            this.setState({passwords});
+        }
+        else
+        {
+            window.toast.error(`Some error!!! ${response.error_message}`);
+        }
+    }
+
     componentDidMount()
     {
         this.loadTagsList();
+        const key = keySource.map( key => {
+            return CryptoJS.HmacSHA512(this.props.authHash,key).toString(CryptoJS.enc.Hex);
+        } );
+        this.setState({key},() => { this.loadPasswordsList(); });
     }
 
     stateSetter = (property,value) => {
@@ -78,6 +104,37 @@ class UserPage extends React.Component
         return data;
     }
 
+    savePassword = async(data,plaintxt) => {
+        data = this.authenticator(data);
+        let result = await apiConsumer('/user/savePassword',data);
+        if(result.status === 'ok')
+        {
+            window.toast.success("Successfully Saved");
+            this.cancelEdit();
+            const { passwords } = this.state;
+            passwords[data.id] = {
+                id : data.id,
+                password : plaintxt,
+                tags : data.tags
+            }
+            this.setState({ passwords });
+        }
+        else
+        {
+            window.toast.error("Some error occured while saving the password");
+        }
+    };
+
+    editPassword = (id) => {
+        this.setState({
+            selected : id
+        });
+    }
+
+     cancelEdit = () => {
+         this.setState({selected:null})
+     }
+
     render()
     {
         const { 
@@ -87,15 +144,22 @@ class UserPage extends React.Component
             loadUsersList,
             addUser,
             loadTagsList,
-            addTag
+            addTag,
+            authenticator,
+            savePassword,
+            editPassword,
+            loadPasswordsList
         } = this; 
 
         const { logoutHandler } = props;
         const { 
-            password,
+            passwords,
             tag,
             tagList,
-            userList 
+            tagMap,
+            userList,
+            selected ,
+            key
         } = state;
         const { username } = props;
         return (
@@ -107,7 +171,8 @@ class UserPage extends React.Component
                         </Navbar.Heading>
                     </Navbar.Group>
                     <Navbar.Group align="right">
-                        <Button minimal intent="primary" icon="add">
+                        <Button minimal intent="success" icon="refresh" onClick={loadPasswordsList} />
+                        <Button minimal intent="primary" icon="add" onClick={() => stateSetter('selected','new')}>
                             {"Add Page"}
                         </Button>
                         <Button onClick={logoutHandler} minimal intent="danger" icon="log-out">
@@ -116,6 +181,56 @@ class UserPage extends React.Component
                     </Navbar.Group>
                 </Navbar>
                 <br />
+                {
+                    selected === 'new' &&
+                    (
+                        <AddPassword cancelEdit={this.cancelEdit} keys={key} savePassword={savePassword} tagMap={tagMap} />
+                    )
+                }
+                {
+                    typeof selected === 'number' &&
+                    <AddPassword cancelEdit={this.cancelEdit} text={passwords[selected].password} tags={passwords[selected].tags} savePassword={savePassword} id={selected} keys={key} tagMap={tagMap} />
+                }
+                {
+                    ( selected === null || selected === undefined ) &&  
+                    (
+                        <Grid container spacing={1} direction="column">
+                            {
+                                Object.entries(passwords).map(([id,p]) => (
+                                        <Grid item>
+                                            <Card elevation={3}>
+                                                <Grid container direction="column" spacing={1}>
+                                                    <Grid item>
+                                                        <Button onClick={() => editPassword(parseInt(id))} intent="warning" icon="edit" text="Edit" />
+                                                    </Grid>
+                                                    <Grid item>
+                                                        {p.password.split('\n').map( d => (
+                                                            <React.Fragment>
+                                                                {d}
+                                                                <br />
+                                                            </React.Fragment>
+                                                        ))}
+                                                    </Grid>
+                                                    <Grid item container spacing={1} direction="row">
+                                                        {
+                                                            p.tags.map(tag => (
+                                                                <Grid item>
+                                                                    <Tag>
+                                                                        {tagMap[tag]}
+                                                                    </Tag>
+                                                                </Grid>
+                                                            ))
+                                                        }
+                                                    </Grid>
+                                                </Grid>
+                                            </Card>
+                                        </Grid>
+                                    )
+                                )
+                            }
+                        </Grid>
+                    )
+                }
             </React.Fragment>
         );
     }

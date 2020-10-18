@@ -29,8 +29,8 @@ window.toast.success = (message) => {
 
 function App() {
   //return (<MainApp />);
-  return (<UserPage authHash={"7f3bb00a6c93373c6cf055c4f7975388a99df5da9a53a52f709b6414499b769d"} loginID={5} username="niranjan" logoutHandler={() => null} />);
-  //return (<AdminPage authHash={'SriRama108!)*'} logoutHandler={()=>null} />);
+  //return (<UserPage authHash={"7f3bb00a6c93373c6cf055c4f7975388a99df5da9a53a52f709b6414499b769d"} loginID={5} username="niranjan" logoutHandler={() => null} />);
+  return (<AdminPage authHash={'SriRama108!)*'} logoutHandler={()=>null} />);
 }
 
 export default App;
