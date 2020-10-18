@@ -1,9 +1,7 @@
 import { 
     b64,
     b64Decrypt,
-    emojiList,
     emojiDecryptList,
-    numberKey,
     numDecryptKey
 } from './emojiKey';
 
@@ -11,7 +9,7 @@ import {
 export default (data) => {
     let result = '';
     let init = 'A';
-    for(let i = 0 ; i != data.length; i++)
+    for(let i = 0 ; i !== data.length; i++)
     {
         const emoji = data[i];
         let result_child = emoji;

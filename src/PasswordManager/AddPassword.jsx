@@ -5,11 +5,9 @@ import {
 } from '@blueprintjs/core';
 
 import { Grid } from '@material-ui/core'
-import CryptoJS from 'crypto-js';
 
 import Select from '../Utils/Select'
 import encrypt from './CryptoHelper/encrypt';
-import decrypt from './CryptoHelper/decrypt';
 
 
 

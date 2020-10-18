@@ -13,6 +13,7 @@ import {
     Grid
 } from '@material-ui/core';
 import apiConsumer from '../Utils/apiConsumer';
+import { downloadTextFile } from '../Utils/utilities';
 import Constants from './Constants';
 
 class AdminPage extends React.Component
@@ -143,6 +144,16 @@ class AdminPage extends React.Component
         data.auth = auth;
         return data;
     }
+    
+    backupData = async() => {
+        const response = await apiConsumer('/admin/backup',this.authenticator({}));
+        if(response.status === 'ok')
+        {
+            const data = JSON.stringify(response.result);
+            const fileName = `PasswordBackup_${new Date().toString()}.json`;
+            downloadTextFile(data,fileName);
+        }
+    };
 
     render()
     {
@@ -153,7 +164,8 @@ class AdminPage extends React.Component
             loadUsersList,
             addUser,
             loadTagsList,
-            addTag
+            addTag,
+            backupData
         } = this; 
 
         const { logoutHandler } = props;
@@ -237,6 +249,8 @@ class AdminPage extends React.Component
                         </Grid>
                     </Grid>
                 </Card>
+                <br />
+                <Button onClick={backupData} intent="primary" text="Backup" />
             </React.Fragment>
         );
     }

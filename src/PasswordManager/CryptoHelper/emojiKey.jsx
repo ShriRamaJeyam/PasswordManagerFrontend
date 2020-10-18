@@ -22,7 +22,7 @@ for(let i=0;i!==b64.length;i++)
     b64Decrypt[b64[i]]=i;
 }
 
-const generateKey = () =>
+/*const generateKey = () =>
 {
     const emoji_length = 161;
     let result = [];
@@ -42,7 +42,7 @@ const generateKey = () =>
         result.push(current)
     }
     return JSON.stringify(result);
-}
+} */
 
 const keySource = [ "Krishna", "Rama", "Matsya", "Kurma", "Varaha", "Narasimha" ];
 

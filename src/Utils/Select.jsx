@@ -1,15 +1,12 @@
 import React from 'react';
 
 import {
-    Select as Sele,
-    MultiSelect as MSele, MultiSelect
+    MultiSelect as MSele
 } from '@blueprintjs/select';
 
 import {
     Tag,
-    MenuItem,
-    Checkbox,
-    InputGroup
+    Checkbox
 } from '@blueprintjs/core'
 
 import { Grid } from '@material-ui/core';
@@ -19,10 +16,11 @@ class Select extends React.Component
     constructor(props)
     {
         super(props);
+        this.state = {};
     }
     render()
     {
-        const { state, props } = this;
+        const { props } = this;
         const { 
             multiple,
             listValues,

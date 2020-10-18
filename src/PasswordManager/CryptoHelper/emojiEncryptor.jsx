@@ -1,10 +1,7 @@
 import { 
-    b64,
     b64Decrypt,
     emojiList,
-    emojiDecryptList,
-    numberKey,
-    numDecryptKey
+    numberKey
 } from './emojiKey';
 
 export default (data) => {

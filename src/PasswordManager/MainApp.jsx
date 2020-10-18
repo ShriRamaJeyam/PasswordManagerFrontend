@@ -74,6 +74,7 @@ class MainApp extends React.Component
                 this.stateSetter('authHash',authHash);
                 this.stateSetter('username',username);
                 this.stateSetter('loginID',result.id);
+                this.stateSetter('userPassword',password);
             }
             else
             {
@@ -86,7 +87,6 @@ class MainApp extends React.Component
     };
 
     logoutHandler = () => {
-        const { loginID } = this.state;
         this.stateSetter('loginID',null);
         this.stateSetter('username',null);
         this.stateSetter('authHash',null);
@@ -95,7 +95,7 @@ class MainApp extends React.Component
     render()
     {
         const { logoutHandler } = this;
-        const { loginID,authHash,username } = this.state;
+        const { loginID,authHash,username, userPassword } = this.state;
         if(!loginID)
         {
             return (<LoginScreen loginHandler={this.loginHandler} />);
@@ -106,7 +106,7 @@ class MainApp extends React.Component
         }
         else if(typeof loginID === 'number')
         {
-            return (<UserPage authHash={authHash} loginID={loginID} username={username} logoutHandler={logoutHandler}  />);
+            return (<UserPage userPassword={userPassword} authHash={authHash} loginID={loginID} username={username} logoutHandler={logoutHandler}  />);
         }
         return null;
     }

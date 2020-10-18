@@ -1,23 +1,20 @@
 import React from 'react';
 import CryptoJS from 'crypto-js';
-import * as qwerty from './CryptoHelper/emojiKey';
 import {
     Navbar,
     Button,
     Card,
-    Tag,
-    InputGroup
+    Tag
 } from '@blueprintjs/core';
 
 import { Grid } from '@material-ui/core';
-
-import CKEditor from 'ckeditor4-react';
 
 import apiConsumer from '../Utils/apiConsumer';
 import Constants from './Constants';
 import AddPassword from './AddPassword';
 import keySource from './keySource';
 import decrypt from './CryptoHelper/decrypt';
+import Select from '../Utils/Select'
 
 class UserPage extends React.Component
 {
@@ -29,7 +26,8 @@ class UserPage extends React.Component
             tagList : [],
             tagMap : {},
             selected: null,
-            passwords: {}
+            passwords: {},
+            filterTags: new Set()
         };
     }
 
@@ -67,7 +65,7 @@ class UserPage extends React.Component
     {
         this.loadTagsList();
         const key = keySource.map( key => {
-            return CryptoJS.HmacSHA512(this.props.authHash,key).toString(CryptoJS.enc.Hex);
+            return CryptoJS.HmacSHA512(this.props.userPassword,key).toString(CryptoJS.enc.Hex);
         } );
         this.setState({key},() => { this.loadPasswordsList(); });
     }
@@ -110,14 +108,18 @@ class UserPage extends React.Component
         if(result.status === 'ok')
         {
             window.toast.success("Successfully Saved");
-            this.cancelEdit();
             const { passwords } = this.state;
+            if ( data.id === 'new' )
+            {
+                data.id = result.result;
+            }
             passwords[data.id] = {
                 id : data.id,
                 password : plaintxt,
                 tags : data.tags
             }
             this.setState({ passwords });
+            this.cancelEdit();
         }
         else
         {
@@ -141,11 +143,6 @@ class UserPage extends React.Component
             props, 
             state, 
             stateSetter,
-            loadUsersList,
-            addUser,
-            loadTagsList,
-            addTag,
-            authenticator,
             savePassword,
             editPassword,
             loadPasswordsList
@@ -154,11 +151,9 @@ class UserPage extends React.Component
         const { logoutHandler } = props;
         const { 
             passwords,
-            tag,
-            tagList,
             tagMap,
-            userList,
             selected ,
+            filterTags,
             key
         } = state;
         const { username } = props;
@@ -195,37 +190,68 @@ class UserPage extends React.Component
                     ( selected === null || selected === undefined ) &&  
                     (
                         <Grid container spacing={1} direction="column">
+                            <Grid item>
+                                <Select 
+                                    fill 
+                                    placeholder="Filter Based on Tags" 
+                                    large 
+                                    onChange={(e) => this.stateSetter('filterTags',e.target.value)} 
+                                    value={filterTags} 
+                                    multiple={true} 
+                                    listValues={tagMap} 
+                                />
+                            </Grid>
                             {
-                                Object.entries(passwords).map(([id,p]) => (
-                                        <Grid item>
-                                            <Card elevation={3}>
-                                                <Grid container direction="column" spacing={1}>
-                                                    <Grid item>
-                                                        <Button onClick={() => editPassword(parseInt(id))} intent="warning" icon="edit" text="Edit" />
+                                Object.entries(passwords).map(([id,p]) => {
+                                        if(filterTags.size !== 0)
+                                        {
+                                            const currentTags = p.tags.map(t => `${t}`);
+                                            let isFound = false;
+                                            for(let i = 0; i !== currentTags.length; i++ )
+                                            {
+                                                if(filterTags.has(currentTags[i]))
+                                                {
+                                                    isFound = true;
+                                                    break;
+                                                }
+                                            }
+                                            if(!isFound)
+                                            {
+                                                return null;
+                                            }
+
+                                        }
+                                        return (
+                                            <Grid item>
+                                                <Card elevation={3}>
+                                                    <Grid container direction="column" spacing={1}>
+                                                        <Grid item>
+                                                            <Button onClick={() => editPassword(parseInt(id))} intent="warning" icon="edit" text="Edit" />
+                                                        </Grid>
+                                                        <Grid item>
+                                                            {p.password.split('\n').map( d => (
+                                                                <React.Fragment>
+                                                                    {d}
+                                                                    <br />
+                                                                </React.Fragment>
+                                                            ))}
+                                                        </Grid>
+                                                        <Grid item container spacing={1} direction="row">
+                                                            {
+                                                                p.tags.map(tag => (
+                                                                    <Grid item>
+                                                                        <Tag>
+                                                                            {tagMap[tag]}
+                                                                        </Tag>
+                                                                    </Grid>
+                                                                ))
+                                                            }
+                                                        </Grid>
                                                     </Grid>
-                                                    <Grid item>
-                                                        {p.password.split('\n').map( d => (
-                                                            <React.Fragment>
-                                                                {d}
-                                                                <br />
-                                                            </React.Fragment>
-                                                        ))}
-                                                    </Grid>
-                                                    <Grid item container spacing={1} direction="row">
-                                                        {
-                                                            p.tags.map(tag => (
-                                                                <Grid item>
-                                                                    <Tag>
-                                                                        {tagMap[tag]}
-                                                                    </Tag>
-                                                                </Grid>
-                                                            ))
-                                                        }
-                                                    </Grid>
-                                                </Grid>
-                                            </Card>
-                                        </Grid>
-                                    )
+                                                </Card>
+                                            </Grid>
+                                        )
+                                    }
                                 )
                             }
                         </Grid>
