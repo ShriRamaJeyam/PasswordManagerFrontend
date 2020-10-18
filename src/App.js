@@ -5,6 +5,7 @@ import "@blueprintjs/select/lib/css/blueprint-select.css";
 
 import { Toaster } from '@blueprintjs/core'
 import MainApp from './PasswordManager/MainApp';
+import apiConsumer from './Utils/apiConsumer'
 
 
 window.toaster = Toaster.create({});
@@ -24,6 +25,8 @@ window.toast.success = (message) => {
     icon:'thumbs-up'
   });
 }
+
+apiConsumer('');
 
 function App() {
   return (<MainApp />);

@@ -1,4 +1,4 @@
 export default {
-    apiHome : 'http://localhost:5000/password-manager',
+    apiHome : 'https://niranjan-cloud.herokuapp.com/password-manager',
     dbUserAuthHashMaker : 'ShriRamaChandra1008ShriRamaBadra'
 };
