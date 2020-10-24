@@ -4,7 +4,8 @@ import {
     Navbar,
     Button,
     Card,
-    Tag
+    Tag,
+    Collapse
 } from '@blueprintjs/core';
 
 import { Grid } from '@material-ui/core';
@@ -15,6 +16,16 @@ import AddPassword from './AddPassword';
 import keySource from './keySource';
 import decrypt from './CryptoHelper/decrypt';
 import Select from '../Utils/Select'
+import Collapseifier from '../Utils/Collapseifier';
+
+const StringElementMaker = (data) => {
+    return data.split('\n').map( d => (
+        <React.Fragment>
+            {d}
+            <br />
+        </React.Fragment>
+    ));
+};
 
 class UserPage extends React.Component
 {
@@ -59,6 +70,10 @@ class UserPage extends React.Component
         {
             window.toast.error(`Some error!!! ${response.error_message}`);
         }
+    }
+    refresher = () => {
+        this.loadPasswordsList();
+        this.loadTagsList();
     }
 
     componentDidMount()
@@ -166,7 +181,7 @@ class UserPage extends React.Component
                         </Navbar.Heading>
                     </Navbar.Group>
                     <Navbar.Group align="right">
-                        <Button minimal intent="success" icon="refresh" onClick={loadPasswordsList} />
+                        <Button minimal intent="success" icon="refresh" onClick={this.refresher} />
                         <Button minimal intent="primary" icon="add" onClick={() => stateSetter('selected','new')}>
                             {"Add Page"}
                         </Button>
@@ -229,12 +244,34 @@ class UserPage extends React.Component
                                                             <Button onClick={() => editPassword(parseInt(id))} intent="warning" icon="edit" text="Edit" />
                                                         </Grid>
                                                         <Grid item>
-                                                            {p.password.split('\n').map( d => (
-                                                                <React.Fragment>
-                                                                    {d}
-                                                                    <br />
-                                                                </React.Fragment>
-                                                            ))}
+                                                            {
+                                                                (() => { 
+                                                                    let content = p.password;
+                                                                    let firstSplitIndex = content.indexOf('~');
+                                                                    if( firstSplitIndex === -1 )
+                                                                    {
+                                                                        return StringElementMaker(content);
+                                                                    }
+                                                                    let former,latter;
+                                                                    former = content.substr(0,firstSplitIndex);
+                                                                    latter = content.substr(firstSplitIndex +1,content.length);
+
+                                                                    return (
+                                                                        [
+                                                                            (
+                                                                                StringElementMaker(former)
+                                                                            ),
+                                                                            (
+                                                                                <Collapseifier body={
+                                                                                    StringElementMaker(latter)
+                                                                                }>
+
+                                                                                </Collapseifier>
+                                                                            )
+                                                                        ]
+                                                                    );
+                                                                })()
+                                                            }
                                                         </Grid>
                                                         <Grid item container spacing={1} direction="row">
                                                             {
