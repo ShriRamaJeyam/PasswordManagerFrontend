@@ -13,6 +13,8 @@ import {
     Grid
 } from '@material-ui/core';
 
+import { unregister } from "../serviceWorker";
+
 class LoginScreen extends React.Component {
     constructor(props) {
         super(props);
@@ -95,15 +97,18 @@ class LoginScreen extends React.Component {
                             </Grid>
                         }
                         <Grid spacing={1} item container direction="row">
-                            <Grid item>
+                            <Grid key={"login"} item>
                                 <Button disabled={!username || !password} onClick={() => loginHandler(username, password, errorSetter)} fill large intent="primary">
                                     {"Login"}
                                 </Button>
                             </Grid>
-                            <Grid item>
+                            <Grid key={"reset"} item>
                                 <Button onClick={resetData} large fill intent="warning">
                                     {"Reset"}
                                 </Button>
+                            </Grid>
+                            <Grid key={"refresh"} item>
+                                <Button icon="refresh" onClick={unregister} large fill intent="success" />
                             </Grid>
                         </Grid>
                     </Grid>
