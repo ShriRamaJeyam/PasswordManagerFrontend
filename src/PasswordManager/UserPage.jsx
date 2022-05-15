@@ -19,7 +19,7 @@ import { retrier } from '../Utils/utilities';
 
 const StringElementMaker = (data) => {
     return data.split('\n').map(d => (
-        <React.Fragment>
+        <React.Fragment key={d}>
             {d}
             <br />
         </React.Fragment>
@@ -168,18 +168,18 @@ class UserPage extends React.Component {
         const { username } = props;
         return (
             <React.Fragment>
-                <Navbar>
+                <Navbar key="nav">
                     <Navbar.Group align="left">
                         <Navbar.Heading>
                             {`Hi, ${username}`}
                         </Navbar.Heading>
                     </Navbar.Group>
                     <Navbar.Group align="right">
-                        <Button minimal intent="success" icon="refresh" onClick={this.refresher} />
-                        <Button minimal intent="primary" icon="add" onClick={() => stateSetter('selected', 'new')}>
+                        <Button key={"refresh"} minimal intent="success" icon="refresh" onClick={this.refresher} />
+                        <Button key={"add"} minimal intent="primary" icon="add" onClick={() => stateSetter('selected', 'new')}>
                             {"Add Page"}
                         </Button>
-                        <Button onClick={logoutHandler} minimal intent="danger" icon="log-out">
+                        <Button key={"logout"} onClick={logoutHandler} minimal intent="danger" icon="log-out">
                             {"Logout"}
                         </Button>
                     </Navbar.Group>
@@ -198,8 +198,8 @@ class UserPage extends React.Component {
                 {
                     (selected === null || selected === undefined) &&
                     (
-                        <Grid container spacing={1} direction="column">
-                            <Grid item>
+                        <Grid key={"tagFilterer"} container spacing={1} direction="column">
+                            <Grid key={"tagFilterer"} item>
                                 <Select
                                     fill
                                     placeholder="Filter Based on Tags"
@@ -227,13 +227,13 @@ class UserPage extends React.Component {
 
                                     }
                                     return (
-                                        <Grid item>
+                                        <Grid item key={id}>
                                             <Card elevation={3}>
                                                 <Grid container direction="column" spacing={1}>
-                                                    <Grid item>
+                                                    <Grid key={"button"} item>
                                                         <Button onClick={() => editPassword(parseInt(id))} intent="warning" icon="edit" text="Edit" />
                                                     </Grid>
-                                                    <Grid item>
+                                                    <Grid key={"body"} item>
                                                         {
                                                             (() => {
                                                                 let content = p.password;
@@ -246,26 +246,20 @@ class UserPage extends React.Component {
                                                                 latter = content.substr(firstSplitIndex + 1, content.length);
 
                                                                 return (
-                                                                    [
-                                                                        (
-                                                                            StringElementMaker(former)
-                                                                        ),
-                                                                        (
-                                                                            <Collapseifier body={
-                                                                                StringElementMaker(latter)
-                                                                            }>
-
-                                                                            </Collapseifier>
-                                                                        )
-                                                                    ]
+                                                                    <React.Fragment key={"txtFrgmt"}>
+                                                                        {StringElementMaker(former)}
+                                                                        <Collapseifier key={latter}
+                                                                            body={StringElementMaker(latter)}
+                                                                        />
+                                                                    </React.Fragment>
                                                                 );
                                                             })()
                                                         }
                                                     </Grid>
-                                                    <Grid item container spacing={1} direction="row">
+                                                    <Grid key={"tags"} item container spacing={1} direction="row">
                                                         {
                                                             p.tags.map(tag => (
-                                                                <Grid item>
+                                                                <Grid key={tagMap[tag]} item>
                                                                     <Tag>
                                                                         {tagMap[tag]}
                                                                     </Tag>

@@ -31,28 +31,12 @@ class Select extends React.Component
         {
             HTMLTag = MSele;
             ModifiedProps.tagRenderer = (item) => (<Tag>{listValues[item]}</Tag>);
-            /*ModifiedProps.itemRenderer = (item) => (
-                <Grid 
-                    onClick={() => {
-                        (value.has(item)?value.delete(item):value.add(item)); 
-                        onChange({target:{ value }});
-                    }}
-                    container 
-                    direction="row"
-                >
-                    <Grid item>
-                        <Checkbox checked={value.has(item)}></Checkbox>
-                    </Grid>
-                    <Grid item>
-                        {listValues[item]}
-                    </Grid>
-                </Grid>
-            ); */
             ModifiedProps.itemRenderer = (item) => {
                 const isActive = value.has(item);
                 return (
                     <MenuItem 
                         text={listValues[item]}
+                        key={listValues[item]}
                         onClick={() => {
                             (value.has(item)?value.delete(item):value.add(item)); 
                             onChange({target:{ value }});
