@@ -6,11 +6,8 @@ import {
 
 import {
     Tag,
-    Checkbox,
     MenuItem
 } from '@blueprintjs/core'
-
-import { Grid } from '@material-ui/core';
 
 class Select extends React.Component
 {

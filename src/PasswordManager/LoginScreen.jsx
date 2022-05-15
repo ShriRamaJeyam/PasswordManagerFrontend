@@ -13,51 +13,45 @@ import {
     Grid
 } from '@material-ui/core';
 
-class LoginScreen extends React.Component 
-{
-    constructor(props)
-    {
+class LoginScreen extends React.Component {
+    constructor(props) {
         super(props);
         this.state = {
-            username:'',
-            password:'',
-            error:''
+            username: '',
+            password: '',
+            error: ''
         };
     }
 
-    stateSetter = (property,value) => {
+    stateSetter = (property, value) => {
         const propHierarchy = property.split('.');
         let rootProp = this.state[propHierarchy[0]];
-        if( propHierarchy.length === 1 )
-        {
+        if (propHierarchy.length === 1) {
             rootProp = value;
         }
-        else
-        {
+        else {
             let parentProp = rootProp;
-            for( let i = 1 ; i < propHierarchy.length - 1; i++ )
-            {
+            for (let i = 1; i < propHierarchy.length - 1; i++) {
                 parentProp = parentProp[propHierarchy[i]];
             }
             parentProp[propHierarchy[propHierarchy.length - 1]] = value;
         }
         this.setState({
-            [propHierarchy[0]] : rootProp
+            [propHierarchy[0]]: rootProp
         });
     };
 
     resetData = () => {
-        this.stateSetter('username','');
-        this.stateSetter('password','');
-        this.stateSetter('error','');
+        this.stateSetter('username', '');
+        this.stateSetter('password', '');
+        this.stateSetter('error', '');
     }
 
     errorSetter = (error) => {
-        this.stateSetter('error',error);
+        this.stateSetter('error', error);
     };
 
-    render()
-    {
+    render() {
         const {
             stateSetter,
             resetData,
@@ -66,10 +60,10 @@ class LoginScreen extends React.Component
             state
         } = this;
 
-        const { 
-            username, 
+        const {
+            username,
             password,
-            error 
+            error
         } = state;
 
         const {
@@ -85,21 +79,24 @@ class LoginScreen extends React.Component
                                 {"Password Manager Login"}
                             </Text>
                         </Grid>
+
                         <Grid item>
-                            <InputGroup placeholder="Username" value={username} onChange={(e) => stateSetter('username',e.target.value) } fill large leftIcon="person" />
+                            <InputGroup placeholder="Username" value={username} onChange={(e) => stateSetter('username', e.target.value)} fill large leftIcon="person" />
                         </Grid>
                         <Grid item>
-                            <InputGroup placeholder="Password" value={password} onChange={(e) => stateSetter('password',e.target.value) } type="password" fill large leftIcon="key" />
+                            <form>
+                                <InputGroup placeholder="Password" value={password} onChange={(e) => stateSetter('password', e.target.value)} type="password" fill large leftIcon="key" />
+                            </form>
                         </Grid>
                         {
                             error &&
                             <Grid item>
-                                <p style={{color:'red'}}>{error}</p>
+                                <p style={{ color: 'red' }}>{error}</p>
                             </Grid>
                         }
                         <Grid spacing={1} item container direction="row">
                             <Grid item>
-                                <Button disabled={!username || !password} onClick={() => loginHandler(username,password,errorSetter)} fill large intent="primary">
+                                <Button disabled={!username || !password} onClick={() => loginHandler(username, password, errorSetter)} fill large intent="primary">
                                     {"Login"}
                                 </Button>
                             </Grid>

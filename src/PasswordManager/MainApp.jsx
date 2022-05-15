@@ -46,7 +46,7 @@ class MainApp extends React.Component
             const { auth } = data;
             auth.millis = now;
             auth.hash = CryptoJS.SHA256(`${password}${now}`).toString(CryptoJS.enc.Hex);
-            var result = await apiConsumer('/admin/auth',data);
+            let result = await apiConsumer('/admin/auth',data);
             if(result.status === 'ok')
             {
                 this.stateSetter('authHash',password);
@@ -68,13 +68,13 @@ class MainApp extends React.Component
             auth.millis = now;
             const authHash = CryptoJS.HmacSHA256(password,Constants.dbUserAuthHashMaker).toString(CryptoJS.enc.Hex);
             auth.hash = CryptoJS.HmacSHA256(`${now}`,authHash).toString(CryptoJS.enc.Hex);
-            var result = await apiConsumer('/user/auth',data);
+            let result = await apiConsumer('/user/auth',data);
             if(result.status === 'ok')
             {
                 this.stateSetter('authHash',authHash);
                 this.stateSetter('username',username);
-                this.stateSetter('loginID',result.id);
                 this.stateSetter('userPassword',password);
+                this.stateSetter('loginID',result.id);
             }
             else
             {
