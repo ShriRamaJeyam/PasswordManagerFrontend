@@ -1,4 +1,4 @@
 export default {
-    apiHome : 'https://niranjan-cloud.herokuapp.com/password-manager',
+    apiHome : 'https://password-manager-55jj.onrender.com/password-manager',
     dbUserAuthHashMaker : 'ShriRamaChandra1008ShriRamaBadra'
 };
