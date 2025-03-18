@@ -9,9 +9,8 @@ import {
     InputGroup
 } from '@blueprintjs/core';
 
-import {
-    Grid
-} from '@material-ui/core';
+import { Grid2 as Grid } from '@mui/material';
+
 import apiConsumer from '../Utils/apiConsumer';
 import { downloadTextFile } from '../Utils/utilities';
 import Constants from './Constants';
@@ -140,7 +139,7 @@ class AdminPage extends React.Component
         const auth = {};
         const now = new Date().getTime();
         auth.millis = now;
-        auth.hash = CryptoJS.SHA256(`${authHash}${now}`).toString(CryptoJS.enc.Hex);
+        auth.hash = CryptoJS.HmacSHA256(`${now}`, authHash).toString(CryptoJS.enc.Hex);
         data.auth = auth;
         return data;
     }
@@ -193,17 +192,17 @@ class AdminPage extends React.Component
                 <br />
                 <Card elevation={5}>
                     <Grid spacing={1} container direction="column">
-                        <Grid item>
+                        <Grid>
                             <InputGroup value={username} onChange={(e) => stateSetter('username',e.target.value)} placeholder="Username" fill large leftIcon="person" />
                         </Grid>
-                        <Grid item>
+                        <Grid>
                             <InputGroup type="password" value={password} onChange={(e) => stateSetter('password',e.target.value)} placeholder="Password" fill large leftIcon="key" />
                         </Grid>
                         <Grid spacing={1} container item direction="row">
-                            <Grid item>
+                            <Grid>
                                 <Button onClick={addUser} intent="primary" icon="add">{"Add User"}</Button>
                             </Grid>
-                            <Grid item>
+                            <Grid>
                                 <Button onClick={loadUsersList} intent="warning" icon='refresh'>{"Refresh Users"}</Button>
                             </Grid>
                         </Grid>
@@ -224,14 +223,14 @@ class AdminPage extends React.Component
                 <br />
                 <Card elevation={5}>
                     <Grid spacing={1} container direction="column">
-                        <Grid item>
+                        <Grid>
                             <InputGroup value={tag} onChange={(e) => stateSetter('tag',e.target.value)} placeholder="Tag Name" fill large leftIcon='tag' />
                         </Grid>
                         <Grid spacing={1} container item direction="row">
-                            <Grid item>
+                            <Grid>
                                 <Button onClick={addTag} intent="primary" icon="add">{"Add Tag"}</Button>
                             </Grid>
-                            <Grid item>
+                            <Grid>
                                 <Button onClick={loadTagsList} intent="warning" icon='refresh'>{"Refresh Tags"}</Button>
                             </Grid>
                         </Grid>

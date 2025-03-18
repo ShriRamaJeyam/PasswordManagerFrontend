@@ -4,7 +4,7 @@ import {
     Button
 } from '@blueprintjs/core';
 
-import { Grid } from '@material-ui/core'
+import { Grid2 as Grid } from '@mui/material';
 
 import Select from '../Utils/Select'
 import encrypt from './CryptoHelper/encrypt';
@@ -77,10 +77,10 @@ class AddPassword extends React.Component
                 />
                 <br />
                 <Grid container direction="row" spacing={1} >
-                    <Grid item>
+                    <Grid>
                         <Button onClick={this.savePassword} icon="floppy-disk" intent="primary" text="Save Password" />
                     </Grid>
-                    <Grid item>
+                    <Grid>
                         <Button onClick={cancelEdit} icon="cross" intent="danger" text="Cancel" />
                     </Grid>
                 </Grid>

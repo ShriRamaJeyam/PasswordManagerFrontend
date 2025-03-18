@@ -4,7 +4,7 @@ import {
     numberKey
 } from './emojiKey';
 
-export default (data) => {
+const emojiEncryptor = (data) => {
     const result = [];
     let init = 'A';
     for(let i = 0 ; i !== data.length; i++)
@@ -20,3 +20,5 @@ export default (data) => {
     }
     return result;
 };
+
+export default emojiEncryptor;

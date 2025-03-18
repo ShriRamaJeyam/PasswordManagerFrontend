@@ -7,7 +7,7 @@ import {
     Tag,
 } from '@blueprintjs/core';
 
-import { Grid } from '@material-ui/core';
+import { Grid2 as Grid } from '@mui/material';
 
 import apiConsumer from '../Utils/apiConsumer';
 import AddPassword from './AddPassword';
@@ -153,8 +153,7 @@ class UserPage extends React.Component {
             state,
             stateSetter,
             savePassword,
-            editPassword,
-            loadPasswordsList
+            editPassword
         } = this;
 
         const { logoutHandler } = props;
@@ -227,7 +226,7 @@ class UserPage extends React.Component {
 
                                     }
                                     return (
-                                        <Grid item key={id}>
+                                        <Grid key={id}>
                                             <Card elevation={3}>
                                                 <Grid container direction="column" spacing={1}>
                                                     <Grid key={"button"} item>

@@ -6,7 +6,7 @@ import {
 } from './emojiKey';
 
 
-export default (data) => {
+const emojiDecrypter = (data) => {
     let result = '';
     let init = 'A';
     for(let i = 0 ; i !== data.length; i++)
@@ -22,3 +22,5 @@ export default (data) => {
     }
     return result;
 };
+
+export default emojiDecrypter;

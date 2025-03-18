@@ -8,10 +8,7 @@ import {
     Button
 } from '@blueprintjs/core';
 
-import {
-    Dialog,
-    Grid
-} from '@material-ui/core';
+import { Grid2 as Grid, Dialog } from '@mui/material';
 
 import { unregister } from "../serviceWorker";
 
@@ -76,23 +73,23 @@ class LoginScreen extends React.Component {
             <Dialog open>
                 <Card elevation="5" >
                     <Grid spacing={2} container direction="column">
-                        <Grid item>
+                        <Grid>
                             <Text tagName="h2" className={Classes.HEADING}>
                                 {"Password Manager Login"}
                             </Text>
                         </Grid>
 
-                        <Grid item>
+                        <Grid>
                             <InputGroup placeholder="Username" value={username} onChange={(e) => stateSetter('username', e.target.value)} fill large leftIcon="person" />
                         </Grid>
-                        <Grid item>
+                        <Grid>
                             <form>
                                 <InputGroup placeholder="Password" value={password} onChange={(e) => stateSetter('password', e.target.value)} type="password" fill large leftIcon="key" />
                             </form>
                         </Grid>
                         {
                             error &&
-                            <Grid item>
+                            <Grid>
                                 <p style={{ color: 'red' }}>{error}</p>
                             </Grid>
                         }

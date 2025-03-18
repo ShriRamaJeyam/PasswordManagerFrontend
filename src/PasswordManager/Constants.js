@@ -1,4 +1,6 @@
-export default {
-    apiHome : 'https://password-manager-55jj.onrender.com/password-manager',
+const constants = {
+    apiHome : 'http://localhost:3000/api/password-manager',
     dbUserAuthHashMaker : 'ShriRamaChandra1008ShriRamaBadra'
 };
+
+export default constants;
